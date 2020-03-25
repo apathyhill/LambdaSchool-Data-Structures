@@ -33,14 +33,10 @@ class LRUCache:
     def get(self, key):
         if key not in self.storage_dict: # Check if key exists
             return None
-        node = self.storage.head # Start at head, and go until none left
-        while node:
-            if self.storage_dict[key] == node: # If key's value is the current node
-                self.storage.move_to_front(node) # Move to head
-                self.storage_dict[key] = self.storage.head # Update key to head
-                return self.storage_dict[key].value
-            node = node.next # Get next node
-        return None
+        node = self.storage_dict[key] # Get key's node
+        self.storage.move_to_front(node) # Move to head
+        self.storage_dict[key] = self.storage.head # Update key
+        return self.storage_dict[key].value
 
     """
     Adds the given key-value pair to the cache. The newly-

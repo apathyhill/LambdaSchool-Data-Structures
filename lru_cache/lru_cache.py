@@ -1,3 +1,5 @@
+from doubly_linked_list import DoublyLinkedList
+
 class LRUCache:
     """
     Our LRUCache class keeps track of the max number of nodes it
@@ -7,7 +9,19 @@ class LRUCache:
     to every node stored in the cache.
     """
     def __init__(self, limit=10):
-        pass
+        self.limit = limit
+        self.storage = DoublyLinkedList()
+        self.storage_dict = {}
+
+
+    def move_to_front(self, key, last_key):
+        self.storage_dict[key] = 0
+        for i in self.storage_dict:
+            if self.storage_dict[i] < last_key:
+                self.storage_dict[i] += 1
+            if self.storage_dict[i] >= self.limit:
+                self.storage.remove_from_tail()
+                self.storage_dict.pop(i)
 
     """
     Retrieves the value associated with the given key. Also
@@ -17,7 +31,16 @@ class LRUCache:
     key-value pair doesn't exist in the cache.
     """
     def get(self, key):
-        pass
+        if key not in self.storage_dict: # Check if key exists
+            return None
+        node = self.storage.head # Start at head, and go until none left
+        while node:
+            if self.storage_dict[key] == node: # If key's value is the current node
+                self.storage.move_to_front(node) # Move to head
+                self.storage_dict[key] = self.storage.head # Update key to head
+                return self.storage_dict[key].value
+            node = node.next # Get next node
+        return None
 
     """
     Adds the given key-value pair to the cache. The newly-
@@ -30,4 +53,17 @@ class LRUCache:
     the newly-specified value.
     """
     def set(self, key, value):
-        pass
+        if key in self.storage_dict: # Delete if exists
+            self.storage.delete(self.storage_dict[key])
+        
+        self.storage.add_to_head(value) # Add value to head and add to the dict
+        self.storage_dict[key] = self.storage.head
+
+        while len(self.storage) > self.limit: # Cleanup if size > limit
+            node = self.storage.tail
+            keys = list(self.storage_dict.keys())
+            for i in keys:
+                if self.storage_dict[i] == node:
+                    self.storage_dict.pop(i)
+                    break
+            self.storage.remove_from_tail()

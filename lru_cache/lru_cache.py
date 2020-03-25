@@ -13,16 +13,6 @@ class LRUCache:
         self.storage = DoublyLinkedList()
         self.storage_dict = {}
 
-
-    def move_to_front(self, key, last_key):
-        self.storage_dict[key] = 0
-        for i in self.storage_dict:
-            if self.storage_dict[i] < last_key:
-                self.storage_dict[i] += 1
-            if self.storage_dict[i] >= self.limit:
-                self.storage.remove_from_tail()
-                self.storage_dict.pop(i)
-
     """
     Retrieves the value associated with the given key. Also
     needs to move the key-value pair to the end of the order
